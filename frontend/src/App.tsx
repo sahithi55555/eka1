@@ -1,5 +1,9 @@
-import { Routes, Route, Navigate } from "react-router-dom"
+import { Routes, Route } from "react-router-dom"
 import { AppLayout } from "./components/layout/AppLayout"
+import { Landing } from "./pages/Landing"
+import { Login } from "./features/auth/pages/Login"
+import { Register } from "./features/auth/pages/Register"
+import { ForgotPassword } from "./features/auth/pages/ForgotPassword"
 
 import Dashboard from "./pages/Dashboard"
 import Chat from "./pages/Chat"
@@ -8,19 +12,42 @@ import Search from "./pages/Search"
 import Analytics from "./pages/Analytics"
 import Admin from "./pages/Admin"
 import Settings from "./pages/Settings"
+import { ProtectedRoute } from "./components/layout/ProtectedRoute"
+import { Unauthorized } from "./pages/Unauthorized"
+import { EmployeeDashboard } from "./pages/EmployeeDashboard"
+import { ManagerDashboard } from "./pages/ManagerDashboard"
+import { AdminDashboard } from "./pages/AdminDashboard"
 
 function App() {
   return (
     <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/unauthorized" element={<Unauthorized />} />
       <Route element={<AppLayout />}>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/chat" element={<Chat />} />
-        <Route path="/documents" element={<Documents />} />
-        <Route path="/search" element={<Search />} />
-        <Route path="/analytics" element={<Analytics />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/settings" element={<Settings />} />
+        {/* Generic employee-level access */}
+        <Route element={<ProtectedRoute allowedRoles={["employee", "manager", "admin"]} />}>
+          <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/documents" element={<Documents />} />
+          <Route path="/search" element={<Search />} />
+        </Route>
+
+        {/* Manager and above access */}
+        <Route element={<ProtectedRoute allowedRoles={["manager", "admin"]} />}>
+          <Route path="/manager/dashboard" element={<ManagerDashboard />} />
+          <Route path="/analytics" element={<Analytics />} />
+        </Route>
+
+        {/* Admin only access */}
+        <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/settings" element={<Settings />} />
+        </Route>
       </Route>
     </Routes>
   )

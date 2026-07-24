@@ -1,7 +1,21 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .core.config import settings
+
 from .api.v1.router import api_router
+from .core.config import settings
+from .db.mongodb import close_mongo_connection, connect_to_mongo
+from .embeddings.model_loader import ModelLoader
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await connect_to_mongo()
+    ModelLoader.initialize()
+    yield
+    await close_mongo_connection()
+
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -9,6 +23,7 @@ app = FastAPI(
     version="0.1.0",
     docs_url=f"{settings.API_V1_STR}/docs",
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    lifespan=lifespan,
 )
 
 # Set up CORS
@@ -23,9 +38,7 @@ if settings.BACKEND_CORS_ORIGINS:
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
+
 @app.get(f"{settings.API_V1_STR}/health", tags=["health"])
 async def health_check():
-    return {
-        "status": "healthy",
-        "service": settings.PROJECT_NAME
-    }
+    return {"status": "healthy", "service": settings.PROJECT_NAME}

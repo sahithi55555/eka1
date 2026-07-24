@@ -1,20 +1,19 @@
-
-import { Container } from "../components/layout/Container"
+import { PageHeader } from "../components/common/PageHeader"
 import { EmptyState } from "../components/ui/EmptyState"
 import { BarChart } from "lucide-react"
 
 export default function Analytics() {
     return (
-        <Container className="py-8">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
-                <p className="text-muted-foreground">Traffic, usage, and cost monitoring.</p>
-            </div>
+        <div className="p-6 max-w-7xl mx-auto space-y-6">
+            <PageHeader
+                title="Analytics"
+                description="Monitor system usage, token consumption, and response times."
+            />
             <EmptyState
                 icon={<BarChart className="h-8 w-8" />}
-                title="Analytics Dashboard"
-                description="Data rendering integration coming soon."
+                title="Insufficient Data"
+                description="Not enough queries have been processed to generate analytics."
             />
-        </Container>
+        </div>
     )
 }

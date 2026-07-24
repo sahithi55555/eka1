@@ -1,20 +1,19 @@
-
-import { Container } from "../components/layout/Container"
+import { PageHeader } from "../components/common/PageHeader"
 import { EmptyState } from "../components/ui/EmptyState"
 import { SearchIcon } from "lucide-react"
 
 export default function Search() {
     return (
-        <Container className="py-8">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold tracking-tight">Global Search</h1>
-                <p className="text-muted-foreground">Find information across all enterprise indices.</p>
-            </div>
+        <div className="p-6 max-w-7xl mx-auto space-y-6">
+            <PageHeader
+                title="Semantic Search"
+                description="Directly query the vector database without LLM augmentation."
+            />
             <EmptyState
                 icon={<SearchIcon className="h-8 w-8" />}
-                title="Search Portal"
-                description="Search integration is under active development."
+                title="Search index ready"
+                description="Enter a query to find semantically matching document chunks."
             />
-        </Container>
+        </div>
     )
 }

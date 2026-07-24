@@ -1,6 +1,10 @@
+from app.api.v1.demo import router as demo_router
+from app.api.v1.documents.router import router as documents_router
+from app.auth.router import router as auth_router
 from fastapi import APIRouter
 
 api_router = APIRouter()
 
-# Placeholder for routing integration:
-# api_router.include_router(users.router, prefix="/users", tags=["users"])
+api_router.include_router(auth_router, prefix="/auth", tags=["auth"])
+api_router.include_router(demo_router, prefix="/demo", tags=["demo"])
+api_router.include_router(documents_router, prefix="/documents", tags=["documents"])

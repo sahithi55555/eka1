@@ -6,6 +6,7 @@ import { Drawer } from "../ui/Drawer"
 
 export const AppLayout = () => {
     const [mobileSidebarOpen, setMobileSidebarOpen] = React.useState(false)
+    const [desktopSidebarCollapsed, setDesktopSidebarCollapsed] = React.useState(false)
     const location = useLocation()
 
     // Auto close mobile sidebar on route change
@@ -16,7 +17,11 @@ export const AppLayout = () => {
     return (
         <div className="flex min-h-screen w-full bg-background">
             {/* Desktop Sidebar */}
-            <Sidebar className="hidden md:flex" />
+            <Sidebar
+                className="hidden md:flex"
+                isCollapsed={desktopSidebarCollapsed}
+                onToggleCollapse={() => setDesktopSidebarCollapsed(!desktopSidebarCollapsed)}
+            />
 
             {/* Mobile Sidebar overlay */}
             <Drawer

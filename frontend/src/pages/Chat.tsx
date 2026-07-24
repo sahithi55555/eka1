@@ -1,21 +1,21 @@
-
-import { Container } from "../components/layout/Container"
+import { PageHeader } from "../components/common/PageHeader"
 import { EmptyState } from "../components/ui/EmptyState"
 import { MessageSquare } from "lucide-react"
+import { Button } from "../components/ui/Button"
 
 export default function Chat() {
     return (
-        <Container className="py-8 flex-1 h-full flex flex-col">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold tracking-tight">Knowledge Chat</h1>
-                <p className="text-muted-foreground">Interact with your AI assistants here.</p>
-            </div>
-            <EmptyState
-                className="flex-1"
-                icon={<MessageSquare className="h-8 w-8" />}
-                title="Chat Interface Coming Soon"
-                description="Knowledge agents are currently being constructed."
+        <div className="p-6 max-w-7xl mx-auto space-y-6">
+            <PageHeader
+                title="Chat Interface"
+                description="Interact with the enterprise knowledge base."
+                actions={<Button>New Chat</Button>}
             />
-        </Container>
+            <EmptyState
+                icon={<MessageSquare className="h-8 w-8" />}
+                title="No active conversations"
+                description="Start a new chat to begin asking questions against your documents."
+            />
+        </div>
     )
 }
