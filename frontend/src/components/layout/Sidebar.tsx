@@ -89,7 +89,7 @@ export const Sidebar = ({
                         <div className="space-y-1">
                             <SidebarLink to="/chat" icon={<MessageSquare />} isCollapsed={isCollapsed}>Chat</SidebarLink>
                             <SidebarLink to="/documents" icon={<FileText />} isCollapsed={isCollapsed}>Documents</SidebarLink>
-                            <SidebarLink to="/search" icon={<Search />} isCollapsed={isCollapsed}>Search</SidebarLink>
+                            <SidebarLink to="/search" icon={<Search />} isCollapsed={isCollapsed}>Semantic Search</SidebarLink>
                         </div>
                     </div>
                     {(role === "admin" || role === "manager") && (

@@ -8,7 +8,8 @@ import { ForgotPassword } from "./features/auth/pages/ForgotPassword"
 import Dashboard from "./pages/Dashboard"
 import Chat from "./pages/Chat"
 import Documents from "./pages/Documents"
-import Search from "./pages/Search"
+import { SemanticSearch } from "./pages/SemanticSearch"
+
 import Analytics from "./pages/Analytics"
 import Admin from "./pages/Admin"
 import Settings from "./pages/Settings"
@@ -33,7 +34,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/documents" element={<Documents />} />
-          <Route path="/search" element={<Search />} />
+          <Route path="/search" element={<SemanticSearch />} />
         </Route>
 
         {/* Manager and above access */}
