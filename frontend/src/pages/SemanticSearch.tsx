@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { retrievalService, SearchResponseData, SearchMetadata } from '../features/retrieval/services/retrievalService';
+import { retrievalService } from '../features/retrieval/services/retrievalService';
+import type { SearchResponseData, SearchMetadata } from '../features/retrieval/services/retrievalService';
 import { SemanticSearchResults } from '../features/retrieval/components/SemanticSearchResults';
 import { Button } from '../components/ui/Button';
 import { Search } from 'lucide-react';
@@ -8,7 +9,7 @@ export const SemanticSearch: React.FC = () => {
     const [query, setQuery] = useState('');
     const [topK, setTopK] = useState<number>(5);
     const [documentIdFilter, setDocumentIdFilter] = useState('');
-    
+
     const [response, setResponse] = useState<SearchResponseData | null>(null);
     const [metadata, setMetadata] = useState<SearchMetadata | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -17,7 +18,7 @@ export const SemanticSearch: React.FC = () => {
 
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!query.trim()) {
             setError("Query cannot be empty.");
             return;
@@ -110,14 +111,14 @@ export const SemanticSearch: React.FC = () => {
                     </div>
                     <div className="flex items-end">
                         <Button type="submit" disabled={isLoading} className="w-full gap-2 h-10">
-                            <Search className="w-4 h-4" /> 
+                            <Search className="w-4 h-4" />
                             Retrieve
                         </Button>
                     </div>
                 </div>
             </form>
 
-            <SemanticSearchResults 
+            <SemanticSearchResults
                 response={response}
                 metadata={metadata}
                 isLoading={isLoading}

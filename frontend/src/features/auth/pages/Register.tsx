@@ -10,6 +10,8 @@ export const Register: React.FC = () => {
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [designation, setDesignation] = useState("");
+    const [department, setDepartment] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -20,7 +22,7 @@ export const Register: React.FC = () => {
         setError("");
         setLoading(true);
         try {
-            await authService.register({ full_name: fullName, email, password });
+            await authService.register({ full_name: fullName, email, password, designation, department });
             setSuccess(true);
             setTimeout(() => {
                 navigate("/login");
@@ -78,6 +80,28 @@ export const Register: React.FC = () => {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
+                                className="w-full"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1 dark:text-gray-200">Designation / Job Title</label>
+                            <Input
+                                type="text"
+                                required
+                                value={designation}
+                                onChange={(e) => setDesignation(e.target.value)}
+                                placeholder="Software Engineer"
+                                className="w-full"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1 dark:text-gray-200">Department</label>
+                            <Input
+                                type="text"
+                                required
+                                value={department}
+                                onChange={(e) => setDepartment(e.target.value)}
+                                placeholder="Engineering"
                                 className="w-full"
                             />
                         </div>

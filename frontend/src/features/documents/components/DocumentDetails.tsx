@@ -20,7 +20,7 @@ export const DocumentDetails: React.FC<DocumentDetailsProps> = ({ document, onBa
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        let interval: NodeJS.Timeout;
+        let interval: ReturnType<typeof setInterval>;
         const checkStatus = async () => {
             try {
                 // Fetch the detailed embedding status
@@ -34,7 +34,7 @@ export const DocumentDetails: React.FC<DocumentDetailsProps> = ({ document, onBa
                     embedding_count: stat.embedding_count,
                     indexed_at: stat.indexed_at
                 });
-                
+
                 if (stat.status === "Completed" || stat.status === "Failed") {
                     clearInterval(interval);
                     onProcessUpdate();
@@ -75,13 +75,13 @@ export const DocumentDetails: React.FC<DocumentDetailsProps> = ({ document, onBa
 
     return (
         <div className="space-y-6">
-            <button 
-                onClick={onBack} 
+            <button
+                onClick={onBack}
                 className="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
             >
                 <ArrowLeft className="h-4 w-4 mr-1" /> Back to Documents
             </button>
-            
+
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h2 className="text-xl font-bold dark:text-white mb-2">{document.filename}</h2>

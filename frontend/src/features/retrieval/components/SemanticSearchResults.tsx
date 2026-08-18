@@ -1,5 +1,5 @@
 import React from 'react';
-import { SearchResponseData, SearchMetadata } from '../services/retrievalService';
+import type { SearchResponseData, SearchMetadata } from '../services/retrievalService';
 import { RetrievedChunkCard } from './RetrievedChunkCard';
 import { Activity, Search, Clock, List } from 'lucide-react';
 
@@ -11,10 +11,10 @@ interface SemanticSearchResultsProps {
     hasSearched: boolean;
 }
 
-export const SemanticSearchResults: React.FC<SemanticSearchResultsProps> = ({ 
+export const SemanticSearchResults: React.FC<SemanticSearchResultsProps> = ({
     response, metadata, isLoading, error, hasSearched
 }) => {
-    
+
     if (isLoading) {
         return (
             <div className="flex flex-col items-center justify-center py-20 text-gray-400">
@@ -34,7 +34,7 @@ export const SemanticSearchResults: React.FC<SemanticSearchResultsProps> = ({
             </div>
         );
     }
-    
+
     if (!hasSearched) {
         return (
             <div className="flex flex-col items-center justify-center py-24 text-gray-400 dark:text-gray-500 bg-gray-50/50 dark:bg-gray-800/20 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
@@ -44,20 +44,20 @@ export const SemanticSearchResults: React.FC<SemanticSearchResultsProps> = ({
             </div>
         );
     }
-    
+
     if (response && response.results.length === 0) {
         return (
             <div className="flex flex-col flex-grow items-center justify-center py-20 text-gray-500 dark:text-gray-400">
                 <Search className="w-10 h-10 mb-4 text-gray-300 dark:text-gray-600" />
                 <p className="font-medium text-lg">No Results Found</p>
                 <p className="text-sm mt-1">Try rewording your query or lowering the similarity threshold.</p>
-                
+
                 {metadata && (
-                     <div className="mt-8 flex gap-4 text-xs bg-gray-100 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-                     <span className="flex items-center gap-1"><List className="w-3 h-3" /> Indexed: {metadata.total_chunks_searched} chunks</span>
-                     <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> Vectors Time: {metadata.vector_search_time_ms}ms</span>
-                     <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> Total Time: {metadata.retrieval_time_ms}ms</span>
-                 </div>
+                    <div className="mt-8 flex gap-4 text-xs bg-gray-100 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+                        <span className="flex items-center gap-1"><List className="w-3 h-3" /> Indexed: {metadata.total_chunks_searched} chunks</span>
+                        <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> Vectors Time: {metadata.vector_search_time_ms}ms</span>
+                        <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> Total Time: {metadata.retrieval_time_ms}ms</span>
+                    </div>
                 )}
             </div>
         );
@@ -71,7 +71,7 @@ export const SemanticSearchResults: React.FC<SemanticSearchResultsProps> = ({
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Showing Top {response.total_results} matching chunks
                 </span>
-                
+
                 {metadata && (
                     <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
                         <span className="flex items-center gap-1" title="Embedding Time"><Activity className="w-3 h-3" /> {metadata.embedding_time_ms}ms embed scale</span>
@@ -80,7 +80,7 @@ export const SemanticSearchResults: React.FC<SemanticSearchResultsProps> = ({
                     </div>
                 )}
             </div>
-            
+
             <div className="grid grid-cols-1 gap-6">
                 {response.results.map((result) => (
                     <RetrievedChunkCard key={result.chunk_id} result={result} />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SearchResultItem } from '../services/retrievalService';
+import type { SearchResultItem } from '../services/retrievalService';
 import { FileText, File, Calendar, User, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface RetrievedChunkCardProps {
@@ -8,7 +8,7 @@ interface RetrievedChunkCardProps {
 
 export const RetrievedChunkCard: React.FC<RetrievedChunkCardProps> = ({ result }) => {
     const [expanded, setExpanded] = useState(false);
-    
+
     // display first 250 characters or full
     const charLimit = 250;
     const isLongStr = result.chunk_text.length > charLimit;
@@ -38,10 +38,10 @@ export const RetrievedChunkCard: React.FC<RetrievedChunkCardProps> = ({ result }
             <div className="mt-2 text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-gray-50 dark:bg-gray-900/50 p-4 rounded-md border border-gray-100 dark:border-gray-700/50">
                 {displayStr}
             </div>
-            
+
             {isLongStr && (
-                <button 
-                    onClick={() => setExpanded(!expanded)} 
+                <button
+                    onClick={() => setExpanded(!expanded)}
                     className="self-start mt-1 flex items-center text-xs font-medium text-primary hover:text-primary/80 transition-colors"
                 >
                     {expanded ? (
@@ -51,7 +51,7 @@ export const RetrievedChunkCard: React.FC<RetrievedChunkCardProps> = ({ result }
                     )}
                 </button>
             )}
-            
+
             <div className="text-xs text-gray-400 dark:text-gray-500 text-right mt-1">
                 {result.metadata.word_count} words • {result.metadata.character_count} chars
             </div>

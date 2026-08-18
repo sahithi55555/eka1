@@ -18,6 +18,8 @@ async def create_user(user_in: UserCreate, db):
         "full_name": user_in.full_name,
         "email": user_in.email,
         "password_hash": get_password_hash(user_in.password),
+        "designation": user_in.designation,
+        "department": user_in.department,
         "role": "employee",
         "created_at": datetime.now(timezone.utc),
         "updated_at": datetime.now(timezone.utc),
@@ -44,3 +46,37 @@ async def authenticate_user(email: str, password: str, db) -> str:
 
     access_token = create_access_token(data={"sub": user["email"]})
     return access_token
+
+
+async def init_admin_user(db):
+    from app.core.config import settings
+
+    admin_email = settings.INITIAL_ADMIN_EMAIL
+    admin_pass = settings.INITIAL_ADMIN_PASSWORD
+    existing = await db.users.find_one({"email": admin_email})
+    if not existing:
+        user_dict = {
+            "_id": str(uuid.uuid4()),
+            "full_name": "System Administrator",
+            "email": admin_email,
+            "password_hash": get_password_hash(admin_pass),
+            "designation": "Administrator",
+            "department": "IT",
+            "role": "admin",
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+        }
+        await db.users.insert_one(user_dict)
+
+
+async def promote_user(email: str, new_role: str, db):
+    user = await db.users.find_one({"email": email})
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+    await db.users.update_one(
+        {"email": email},
+        {"$set": {"role": new_role, "updated_at": datetime.now(timezone.utc)}},
+    )
+    return True

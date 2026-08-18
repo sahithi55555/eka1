@@ -38,8 +38,8 @@ export interface SearchResultItem {
     chunk_id: string;
     chunk_index: number;
     chunk_text: string;
-    page_start: int;
-    page_end: int;
+    page_start: number;
+    page_end: number;
     similarity_score: number;
     metadata: SearchResultItemMetadata;
 }

@@ -44,6 +44,13 @@ class SearchResultItem(BaseModel):
     metadata: SearchResultItemMetadata
 
 
+class SearchResponse(BaseModel):
+    query: str
+    retrieval_time_ms: int
+    total_results: int
+    results: List[SearchResultItem]
+
+
 class SearchMetadata(BaseModel):
     total_chunks_searched: int
     total_chunks_returned: int

@@ -4,15 +4,21 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .api.v1.router import api_router
+from .auth.service import init_admin_user
 from .core.config import settings
-from .db.mongodb import close_mongo_connection, connect_to_mongo
+from .db.mongodb import close_mongo_connection, connect_to_mongo, get_database
 from .embeddings.model_loader import ModelLoader
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    print("Starting lifespan")
     await connect_to_mongo()
+    print("Connected to mongo")
     ModelLoader.initialize()
+    print("Model initialized")
+    await init_admin_user(get_database())
+    print("Admin user init done")
     yield
     await close_mongo_connection()
 
