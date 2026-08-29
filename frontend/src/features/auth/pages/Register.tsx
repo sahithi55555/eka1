@@ -12,6 +12,7 @@ export const Register: React.FC = () => {
     const [password, setPassword] = useState("");
     const [designation, setDesignation] = useState("");
     const [department, setDepartment] = useState("");
+    const [requestedRole, setRequestedRole] = useState("employee");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -22,11 +23,18 @@ export const Register: React.FC = () => {
         setError("");
         setLoading(true);
         try {
-            await authService.register({ full_name: fullName, email, password, designation, department });
+            await authService.register({
+                full_name: fullName,
+                email,
+                password,
+                designation,
+                department,
+                requested_role: requestedRole,
+            });
             setSuccess(true);
             setTimeout(() => {
                 navigate("/login");
-            }, 2000);
+            }, 2500);
         } catch (err: any) {
             setError(err.message || "Failed to register. Please try again.");
         } finally {
@@ -36,7 +44,7 @@ export const Register: React.FC = () => {
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
-            <div className="w-full max-w-md px-6">
+            <div className="w-full max-w-md px-6 py-12">
                 <div className="mb-8 text-center">
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Create an Account</h1>
                     <p className="mt-2 text-gray-600 dark:text-gray-400">Join the EKA Platform today.</p>
@@ -46,10 +54,10 @@ export const Register: React.FC = () => {
                     {error && <Alert variant="danger" className="mb-4">{error}</Alert>}
                     {success && (
                         <Alert variant="success" className="mb-4">
-                            Registration successful! Redirecting to login...
+                            Registration successful! {requestedRole !== "employee" ? "Your role request has been submitted for admin approval." : ""} Redirecting to login...
                         </Alert>
                     )}
-                    <form onSubmit={handleRegister} className="space-y-6">
+                    <form onSubmit={handleRegister} className="space-y-5">
                         <div>
                             <label className="block text-sm font-medium mb-1 dark:text-gray-200">Full Name</label>
                             <Input
@@ -105,6 +113,23 @@ export const Register: React.FC = () => {
                                 className="w-full"
                             />
                         </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1 dark:text-gray-200">Requested Role</label>
+                            <select
+                                value={requestedRole}
+                                onChange={(e) => setRequestedRole(e.target.value)}
+                                className="w-full px-3 py-2 border rounded-md shadow-sm bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="employee">Employee (Standard Access)</option>
+                                <option value="manager">Manager (Requires Admin Approval)</option>
+                                <option value="admin">Administrator (Requires Admin Approval)</option>
+                            </select>
+                            {requestedRole !== "employee" && (
+                                <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
+                                    Privileged roles require administrator approval. Your account will start with standard employee access.
+                                </p>
+                            )}
+                        </div>
                         <Button
                             type="submit"
                             variant="primary"
@@ -125,3 +150,4 @@ export const Register: React.FC = () => {
         </div>
     );
 };
+

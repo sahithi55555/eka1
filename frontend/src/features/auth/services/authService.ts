@@ -17,8 +17,8 @@ export const authService = {
     async login(data: any) {
         const response = await fetch(`${API_URL}/login`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams(data).toString(),
         });
         if (!response.ok) {
             const error = await response.json();
@@ -49,4 +49,82 @@ export const authService = {
         }
         return response.json();
     },
+
+    async getRoleRequests(statusFilter?: string) {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("No token found");
+
+        const url = statusFilter
+            ? `${API_URL}/role-requests?status_filter=${encodeURIComponent(statusFilter)}`
+            : `${API_URL}/role-requests`;
+
+        const response = await fetch(url, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || "Failed to fetch role requests");
+        }
+        return response.json();
+    },
+
+    async approveRole(email: string) {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("No token found");
+
+        const response = await fetch(`${API_URL}/approve-role`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ email }),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || "Failed to approve role");
+        }
+        return response.json();
+    },
+
+    async rejectRole(email: string, reason?: string) {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("No token found");
+
+        const response = await fetch(`${API_URL}/reject-role`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ email, reason }),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || "Failed to reject role");
+        }
+        return response.json();
+    },
+
+    async promoteUser(email: string, role: string) {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("No token found");
+
+        const response = await fetch(`${API_URL}/promote`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ email, role }),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || "Failed to promote user");
+        }
+        return response.json();
+    },
 };
+

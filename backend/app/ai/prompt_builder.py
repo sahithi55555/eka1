@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from app.ai.constants import (
     PROMPT_CONTEXT_TEMPLATE,
@@ -9,7 +9,10 @@ from app.ai.constants import (
 
 class PromptBuilder:
     def build_prompt(
-        self, question: str, retrieved_chunks: List[Any]
+        self,
+        question: str,
+        retrieved_chunks: List[Any],
+        conversation_history: Optional[List[Dict[str, str]]] = None,
     ) -> Tuple[List[Dict[str, str]], Dict[str, Dict[str, Any]]]:
         """Build a grounded LLM prompt and map source labels back to retrieved chunk metadata."""
         context_parts: List[str] = []
@@ -63,7 +66,16 @@ class PromptBuilder:
 
         messages = [
             {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_message_content},
         ]
 
+        if conversation_history:
+            for hist_msg in conversation_history:
+                role = hist_msg.get("role")
+                content = hist_msg.get("content")
+                if role in ("user", "assistant") and content:
+                    messages.append({"role": role, "content": content})
+
+        messages.append({"role": "user", "content": user_message_content})
+
         return messages, source_map
+
