@@ -58,12 +58,47 @@ const getHeaders = () => {
     };
 };
 
+async function handleErrorResponse(response: Response, defaultMessage: string): Promise<never> {
+    let errorDetail = defaultMessage;
+    try {
+        const errorJson = await response.json();
+        if (errorJson && errorJson.detail) {
+            errorDetail = typeof errorJson.detail === "string" 
+                ? errorJson.detail 
+                : JSON.stringify(errorJson.detail);
+        }
+    } catch {
+        if (response.status === 401) {
+            errorDetail = "Unauthorized. Please log in again.";
+        } else if (response.status === 403) {
+            errorDetail = "Access denied. You do not have permission to perform this action.";
+        } else if (response.status === 404) {
+            errorDetail = "Document not found or has been deleted.";
+        } else if (response.status >= 500) {
+            errorDetail = "Server error occurred. Please try again later.";
+        }
+    }
+    throw new Error(errorDetail);
+}
+
 export const documentService = {
     async fetchDocuments(): Promise<Document[]> {
         const response = await fetch(`${API_URL}/`, {
             headers: getHeaders()
         });
-        if (!response.ok) throw new Error("Failed to fetch documents");
+        if (!response.ok) {
+            await handleErrorResponse(response, "Failed to fetch documents");
+        }
+        return response.json();
+    },
+
+    async fetchDocument(id: string): Promise<Document> {
+        const response = await fetch(`${API_URL}/${id}`, {
+            headers: getHeaders()
+        });
+        if (!response.ok) {
+            await handleErrorResponse(response, "Failed to fetch document details");
+        }
         return response.json();
     },
 
@@ -77,7 +112,9 @@ export const documentService = {
             body: formData,
         });
 
-        if (!response.ok) throw new Error("Failed to upload document");
+        if (!response.ok) {
+            await handleErrorResponse(response, "Failed to upload document");
+        }
         return response.json();
     },
 
@@ -86,7 +123,9 @@ export const documentService = {
             method: "DELETE",
             headers: getHeaders()
         });
-        if (!response.ok) throw new Error("Failed to delete document");
+        if (!response.ok) {
+            await handleErrorResponse(response, "Failed to delete document");
+        }
         return true;
     },
 
@@ -95,7 +134,9 @@ export const documentService = {
             method: "POST",
             headers: getHeaders()
         });
-        if (!response.ok) throw new Error("Failed to trigger processing");
+        if (!response.ok) {
+            await handleErrorResponse(response, "Failed to trigger document processing");
+        }
         return true;
     },
 
@@ -103,7 +144,9 @@ export const documentService = {
         const response = await fetch(`${API_URL}/${id}/status`, {
             headers: getHeaders()
         });
-        if (!response.ok) throw new Error("Failed to fetch document status");
+        if (!response.ok) {
+            await handleErrorResponse(response, "Failed to fetch document status");
+        }
         return response.json();
     },
 
@@ -111,7 +154,9 @@ export const documentService = {
         const response = await fetch(`${API_URL}/${id}/embedding-status`, {
             headers: getHeaders()
         });
-        if (!response.ok) throw new Error("Failed to fetch embedding status");
+        if (!response.ok) {
+            await handleErrorResponse(response, "Failed to fetch embedding status");
+        }
         return response.json();
     },
 
@@ -119,7 +164,10 @@ export const documentService = {
         const response = await fetch(`${API_URL}/${id}/chunks`, {
             headers: getHeaders()
         });
-        if (!response.ok) throw new Error("Failed to fetch document chunks");
+        if (!response.ok) {
+            await handleErrorResponse(response, "Failed to fetch document chunks");
+        }
         return response.json();
     }
 };
+

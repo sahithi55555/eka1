@@ -30,6 +30,7 @@ router = APIRouter()
 async def upload_document(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
+    auto_process: bool = False,
     current_user: UserInDB = Depends(get_current_user),
     db=Depends(get_database),
 ):
@@ -40,8 +41,20 @@ async def upload_document(
         raise HTTPException(status_code=400, detail="Unsupported file format")
 
     doc = await service.process_and_store_document(
-        file, current_user.email, db, background_tasks
+        file, current_user.email, db, background_tasks, auto_process=auto_process
     )
+    return doc
+
+
+@router.get("/{doc_id}", response_model=DocumentResponse)
+async def get_document(
+    doc_id: str,
+    current_user: UserInDB = Depends(get_current_user),
+    db=Depends(get_database),
+):
+    doc = await service.get_document_by_id(doc_id, current_user.email, db)
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
     return doc
 
 
@@ -57,8 +70,9 @@ async def get_document_status(
     return stat
 
 
+@router.post("/{doc_id}/process", status_code=status.HTTP_202_ACCEPTED)
 @router.post("/{doc_id}/embed", status_code=status.HTTP_202_ACCEPTED)
-async def trigger_embedding(
+async def trigger_processing(
     doc_id: str,
     background_tasks: BackgroundTasks,
     current_user: UserInDB = Depends(get_current_user),
@@ -71,7 +85,7 @@ async def trigger_embedding(
         raise HTTPException(
             status_code=404, detail="Document not found or access denied"
         )
-    return {"message": "Embedding process started"}
+    return {"message": "Processing pipeline started"}
 
 
 @router.get("/{doc_id}/embedding-status", response_model=EmbeddingStatusResponse)
@@ -115,3 +129,4 @@ async def delete_document(
         raise HTTPException(
             status_code=404, detail="Document not found or access denied"
         )
+

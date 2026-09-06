@@ -90,3 +90,11 @@ class ChromaDBRepository(VectorRepository):
             )
 
         return retrieved
+
+    def delete_by_document(self, document_id: str) -> None:
+        collection = self._get_collection()
+        try:
+            collection.delete(where={"document_id": document_id})
+        except Exception as e:
+            print(f"ChromaDB delete error: {e}")
+
