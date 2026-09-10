@@ -15,14 +15,27 @@ export const authService = {
     },
 
     async login(data: any) {
+        const formData = new URLSearchParams();
+        const username = data.username || data.email || "";
+        formData.append("username", username);
+        formData.append("password", data.password || "");
+
         const response = await fetch(`${API_URL}/login`, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams(data).toString(),
+            body: formData.toString(),
         });
         if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.detail || "Login failed");
+            const error = await response.json().catch(() => ({}));
+            let errorMsg = "Login failed";
+            if (typeof error.detail === "string") {
+                errorMsg = error.detail;
+            } else if (Array.isArray(error.detail)) {
+                errorMsg = error.detail.map((d: any) => d.msg || JSON.stringify(d)).join(", ");
+            } else if (error.detail) {
+                errorMsg = JSON.stringify(error.detail);
+            }
+            throw new Error(errorMsg);
         }
         const result = await response.json();
         if (result.access_token) {

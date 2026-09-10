@@ -9,10 +9,13 @@ import Dashboard from "./pages/Dashboard"
 import Chat from "./pages/Chat"
 import Documents from "./pages/Documents"
 import { SemanticSearch } from "./pages/SemanticSearch"
+import Profile from "./pages/Profile"
+import Settings from "./pages/Settings"
 
 import Analytics from "./pages/Analytics"
 import Admin from "./pages/Admin"
-import Settings from "./pages/Settings"
+import AdminUsers from "./pages/AdminUsers"
+import RoleRequests from "./pages/RoleRequests"
 import { ProtectedRoute } from "./components/layout/ProtectedRoute"
 import { Unauthorized } from "./pages/Unauthorized"
 import { EmployeeDashboard } from "./pages/EmployeeDashboard"
@@ -28,13 +31,16 @@ function App() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
       <Route element={<AppLayout />}>
-        {/* Generic employee-level access */}
+        {/* General authenticated workspace access */}
         <Route element={<ProtectedRoute allowedRoles={["employee", "manager", "admin"]} />}>
-          <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
+          <Route path="/home" element={<Dashboard />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/documents" element={<Documents />} />
           <Route path="/search" element={<SemanticSearch />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
         </Route>
 
         {/* Manager and above access */}
@@ -47,7 +53,8 @@ function App() {
         <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin" element={<Admin />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/role-requests" element={<RoleRequests />} />
         </Route>
       </Route>
     </Routes>
@@ -55,3 +62,4 @@ function App() {
 }
 
 export default App
+

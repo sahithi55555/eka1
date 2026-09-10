@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react"
+import { Link } from "react-router-dom"
 import { PageHeader } from "../components/common/PageHeader"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../components/layout/Card"
 import { Button } from "../components/ui/Button"
 import { Input } from "../components/ui/Input"
 import { Alert } from "../components/ui/Alert"
 import { authService } from "../features/auth/services/authService"
-import { ShieldCheck, CheckCircle2, XCircle, Clock, RefreshCw, UserCheck, Search } from "lucide-react"
+import { ShieldCheck, CheckCircle2, XCircle, Clock, RefreshCw, UserCheck, Search, Users, ArrowRight } from "lucide-react"
 
 interface RoleRequest {
     id: string
@@ -83,7 +84,7 @@ export default function Admin() {
         setMessage(null)
         try {
             await authService.promoteUser(promoteEmail, promoteRole)
-            setMessage({ type: "success", text: `User ${promoteEmail} promoted to ${promoteRole} successfully.` })
+            setMessage({ type: "success", text: `User ${promoteEmail} promoted to ${promoteRole.toUpperCase()} successfully.` })
             setPromoteEmail("")
             await fetchRequests()
         } catch (err: any) {
@@ -97,17 +98,17 @@ export default function Admin() {
         if (!searchQuery) return true
         const q = searchQuery.toLowerCase()
         return (
-            r.full_name?.toLowerCase().includes(q) ||
-            r.email?.toLowerCase().includes(q) ||
-            r.designation?.toLowerCase().includes(q) ||
-            r.department?.toLowerCase().includes(q)
+            (r.full_name || "").toLowerCase().includes(q) ||
+            (r.email || "").toLowerCase().includes(q) ||
+            (r.designation || "").toLowerCase().includes(q) ||
+            (r.department || "").toLowerCase().includes(q)
         )
     })
 
     const pendingCount = requests.filter((r) => r.role_status === "pending").length
 
     return (
-        <div className="p-6 max-w-7xl mx-auto space-y-6">
+        <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-200">
             <PageHeader
                 title="Admin Control & Role Governance"
                 description="Review role requests, manage user access, and configure organizational permissions."
@@ -119,37 +120,79 @@ export default function Admin() {
                 </Alert>
             )}
 
+            {/* Hub Direct Navigation Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Link
+                    to="/admin/users"
+                    className="p-5 rounded-xl border border-border bg-card/80 hover:bg-card hover:border-primary/40 hover:shadow-md transition-all flex items-center justify-between group"
+                >
+                    <div className="flex items-center gap-3.5">
+                        <div className="p-3 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 group-hover:scale-105 transition-transform">
+                            <Users className="h-6 w-6" />
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-semibold text-foreground">User Governance</h3>
+                            <p className="text-xs text-muted-foreground mt-0.5">Manage accounts, departments, and active roles</p>
+                        </div>
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                </Link>
+
+                <Link
+                    to="/admin/role-requests"
+                    className="p-5 rounded-xl border border-border bg-card/80 hover:bg-card hover:border-primary/40 hover:shadow-md transition-all flex items-center justify-between group"
+                >
+                    <div className="flex items-center gap-3.5">
+                        <div className="p-3 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 group-hover:scale-105 transition-transform">
+                            <UserCheck className="h-6 w-6" />
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                                <span>Role Requests</span>
+                                {pendingCount > 0 && (
+                                    <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-500 text-white">
+                                        {pendingCount} Pending
+                                    </span>
+                                )}
+                            </h3>
+                            <p className="text-xs text-muted-foreground mt-0.5">Approve or reject elevated privilege requests</p>
+                        </div>
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                </Link>
+            </div>
+
             {/* Quick Stats / Summary */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card className="p-4 flex items-center space-x-4 border-l-4 border-l-amber-500">
-                    <div className="p-3 bg-amber-100 dark:bg-amber-900/40 rounded-full text-amber-600">
+                <Card className="p-4 flex items-center space-x-4 border-l-4 border-l-amber-500 bg-card/70 border-border">
+                    <div className="p-3 bg-amber-100 dark:bg-amber-900/40 rounded-full text-amber-600 dark:text-amber-400">
                         <Clock className="w-6 h-6" />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Pending Requests</p>
-                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{pendingCount}</h3>
+                        <p className="text-xs font-medium text-muted-foreground">Pending Requests</p>
+                        <h3 className="text-2xl font-bold text-foreground">{pendingCount}</h3>
                     </div>
                 </Card>
 
-                <Card className="p-4 flex items-center space-x-4 border-l-4 border-l-green-500">
-                    <div className="p-3 bg-green-100 dark:bg-green-900/40 rounded-full text-green-600">
+                <Card className="p-4 flex items-center space-x-4 border-l-4 border-l-emerald-500 bg-card/70 border-border">
+                    <div className="p-3 bg-emerald-100 dark:bg-emerald-900/40 rounded-full text-emerald-600 dark:text-emerald-400">
                         <CheckCircle2 className="w-6 h-6" />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Approved Roles</p>
-                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                        <p className="text-xs font-medium text-muted-foreground">Approved Roles</p>
+                        <h3 className="text-2xl font-bold text-foreground">
                             {requests.filter((r) => r.role_status === "approved").length}
                         </h3>
                     </div>
                 </Card>
 
-                <Card className="p-4 flex items-center space-x-4 border-l-4 border-l-blue-500">
-                    <div className="p-3 bg-blue-100 dark:bg-blue-900/40 rounded-full text-blue-600">
+                <Card className="p-4 flex items-center space-x-4 border-l-4 border-l-blue-500 bg-card/70 border-border">
+                    <div className="p-3 bg-blue-100 dark:bg-blue-900/40 rounded-full text-blue-600 dark:text-blue-400">
                         <ShieldCheck className="w-6 h-6" />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Users Tracked</p>
-                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{requests.length}</h3>
+                        <p className="text-xs font-medium text-muted-foreground">Total Users Tracked</p>
+                        <h3 className="text-2xl font-bold text-foreground">{requests.length}</h3>
                     </div>
                 </Card>
             </div>

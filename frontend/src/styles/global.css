@@ -4,59 +4,59 @@
 
 @layer base {
   :root {
-    --background: #ffffff;
-    --foreground: #11181c;
+    --background: #f8fafc;
+    --foreground: #0f172a;
 
     --card: #ffffff;
-    --card-foreground: #11181c;
+    --card-foreground: #0f172a;
 
-    --border: #e6e8eb;
-    --input: #e6e8eb;
-    --ring: #11181c;
+    --border: #e2e8f0;
+    --input: #cbd5e1;
+    --ring: #3b82f6;
 
-    --primary: #11181c;
+    --primary: #0f172a;
     --primary-foreground: #ffffff;
 
-    --secondary: #f1f3f5;
-    --secondary-foreground: #11181c;
+    --secondary: #f1f5f9;
+    --secondary-foreground: #0f172a;
 
-    --danger: #e5484d;
+    --danger: #ef4444;
     --danger-foreground: #ffffff;
 
-    --muted: #f8f9fa;
-    --muted-foreground: #687076;
+    --muted: #f1f5f9;
+    --muted-foreground: #64748b;
 
-    --accent: #f1f3f5;
-    --accent-foreground: #11181c;
+    --accent: #f8fafc;
+    --accent-foreground: #0f172a;
 
-    --radius: 0.5rem;
+    --radius: 0.625rem;
   }
 
   .dark {
-    --background: #000000;
-    --foreground: #ededed;
+    --background: #090d16;
+    --foreground: #f8fafc;
 
-    --card: #111111;
-    --card-foreground: #ededed;
+    --card: #111827;
+    --card-foreground: #f8fafc;
 
-    --border: #333333;
-    --input: #333333;
-    --ring: #ededed;
+    --border: #1e293b;
+    --input: #334155;
+    --ring: #38bdf8;
 
-    --primary: #ededed;
-    --primary-foreground: #000000;
+    --primary: #f8fafc;
+    --primary-foreground: #090d16;
 
-    --secondary: #222222;
-    --secondary-foreground: #ededed;
+    --secondary: #1e293b;
+    --secondary-foreground: #f8fafc;
 
-    --danger: #e5484d;
-    --danger-foreground: #ededed;
+    --danger: #f87171;
+    --danger-foreground: #ffffff;
 
-    --muted: #111111;
-    --muted-foreground: #a0a0a0;
+    --muted: #1e293b;
+    --muted-foreground: #94a3b8;
 
-    --accent: #222222;
-    --accent-foreground: #ededed;
+    --accent: #1e293b;
+    --accent-foreground: #f8fafc;
   }
 }
 
@@ -68,5 +68,25 @@
   body {
     @apply bg-background text-foreground tracking-tight antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    min-height: 100vh;
+  }
+
+  /* Custom subtle scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(148, 163, 184, 0.25);
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(148, 163, 184, 0.45);
   }
 }

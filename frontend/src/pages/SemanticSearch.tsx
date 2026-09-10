@@ -3,6 +3,8 @@ import { retrievalService } from '../features/retrieval/services/retrievalServic
 import type { SearchResponseData, SearchMetadata } from '../features/retrieval/services/retrievalService';
 import { SemanticSearchResults } from '../features/retrieval/components/SemanticSearchResults';
 import { Button } from '../components/ui/Button';
+import { Card, CardContent } from '../components/layout/Card';
+import { PageHeader } from '../components/common/PageHeader';
 import { Search } from 'lucide-react';
 
 export const SemanticSearch: React.FC = () => {
@@ -37,9 +39,9 @@ export const SemanticSearch: React.FC = () => {
 
         try {
             const apiRes = await retrievalService.search({
-                query,
+                query: query.trim(),
                 top_k: topK,
-                filters: documentIdFilter ? { document_id: documentIdFilter } : undefined
+                filters: documentIdFilter.trim() ? { document_id: documentIdFilter.trim() } : undefined
             });
 
             if (apiRes.success && apiRes.data) {
@@ -57,66 +59,80 @@ export const SemanticSearch: React.FC = () => {
     };
 
     return (
-        <div className="max-w-6xl mx-auto space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 pb-6 border-b dark:border-gray-800">
-                <div>
-                    <h1 className="text-3xl font-bold dark:text-white">Semantic Search</h1>
-                    <p className="mt-2 text-gray-600 dark:text-gray-400">
-                        Query your knowledge base directly over the Vector Database.
-                    </p>
-                </div>
-            </div>
+        <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6 animate-in fade-in duration-200">
+            <PageHeader
+                title="Semantic Search"
+                description="Query your knowledge repository directly over vector embeddings to retrieve relevant chunks without LLM synthesis."
+            />
 
-            <form onSubmit={handleSearch} className="bg-white dark:bg-gray-800 p-6 rounded-lg border shadow-sm">
-                <div className="flex flex-col md:flex-row gap-4">
-                    <div className="flex-grow">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Search Query
-                        </label>
-                        <input
-                            type="text"
-                            value={query}
-                            onChange={(e) => setQuery(e.target.value)}
-                            placeholder="Ask a question or enter keywords..."
-                            className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2 border"
-                            disabled={isLoading}
-                        />
-                    </div>
-                    <div className="w-full md:w-32">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Top K
-                        </label>
-                        <input
-                            type="number"
-                            min="1"
-                            max="20"
-                            value={topK}
-                            onChange={(e) => setTopK(parseInt(e.target.value) || 5)}
-                            className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2 border"
-                            disabled={isLoading}
-                        />
-                    </div>
-                    <div className="w-full md:w-48">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Document ID Filter
-                        </label>
-                        <input
-                            type="text"
-                            value={documentIdFilter}
-                            onChange={(e) => setDocumentIdFilter(e.target.value)}
-                            placeholder="Optional ID..."
-                            className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2 border"
-                            disabled={isLoading}
-                        />
-                    </div>
-                    <div className="flex items-end">
-                        <Button type="submit" disabled={isLoading} className="w-full gap-2 h-10">
-                            <Search className="w-4 h-4" />
-                            Retrieve
-                        </Button>
-                    </div>
-                </div>
-            </form>
+            {/* Search Input Card */}
+            <Card className="border-border bg-card/80 shadow-sm">
+                <CardContent className="p-5">
+                    <form onSubmit={handleSearch} className="space-y-4">
+                        <div className="flex flex-col md:flex-row gap-3">
+                            <div className="flex-1">
+                                <label className="block text-xs font-semibold text-foreground mb-1.5">
+                                    Search Query
+                                </label>
+                                <div className="relative">
+                                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                    <input
+                                        type="text"
+                                        value={query}
+                                        onChange={(e) => setQuery(e.target.value)}
+                                        placeholder="Enter concept, policy question, or keywords to find matching chunks..."
+                                        className="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary shadow-sm placeholder:text-muted-foreground"
+                                        disabled={isLoading}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="w-full md:w-32">
+                                <label className="block text-xs font-semibold text-foreground mb-1.5 flex items-center justify-between">
+                                    <span>Top K</span>
+                                    <span className="text-[11px] text-muted-foreground font-mono">1-20</span>
+                                </label>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    max="20"
+                                    value={topK}
+                                    onChange={(e) => setTopK(Math.max(1, Math.min(20, parseInt(e.target.value) || 5)))}
+                                    className="w-full px-3 py-2 text-sm rounded-lg border border-input bg-background text-foreground text-center font-semibold focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+                                    disabled={isLoading}
+                                />
+                            </div>
+
+                            <div className="w-full md:w-56">
+                                <label className="block text-xs font-semibold text-foreground mb-1.5">
+                                    Document Filter (Optional)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={documentIdFilter}
+                                    onChange={(e) => setDocumentIdFilter(e.target.value)}
+                                    placeholder="Filter by Document ID..."
+                                    className="w-full px-3 py-2 text-sm rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary shadow-sm placeholder:text-muted-foreground text-xs"
+                                    disabled={isLoading}
+                                />
+                            </div>
+
+                            <div className="flex items-end">
+                                <Button
+                                    type="submit"
+                                    variant="primary"
+                                    size="md"
+                                    disabled={isLoading || !query.trim()}
+                                    className="w-full md:w-auto h-[38px] px-5 gap-2 shadow-sm font-semibold"
+                                >
+                                    <Search className="w-4 h-4" />
+                                    <span>{isLoading ? "Searching..." : "Retrieve"}</span>
+                                </Button>
+                            </div>
+                        </div>
+                    </form>
+                </CardContent>
+            </Card>
 
             <SemanticSearchResults
                 response={response}
@@ -128,3 +144,5 @@ export const SemanticSearch: React.FC = () => {
         </div>
     );
 };
+export default SemanticSearch;
+

@@ -1,8 +1,11 @@
 
 import { ArrowRight } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 import { Button } from "../ui/Button"
 
 export const CTASection = () => {
+    const navigate = useNavigate()
+
     return (
         <section className="py-24 bg-primary text-primary-foreground relative overflow-hidden">
             {/* Background flare */}
@@ -17,11 +20,20 @@ export const CTASection = () => {
                     Deploys in minutes, scales to billions of tokens.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Button size="lg" variant="secondary" className="w-full sm:w-auto h-12 px-8 text-base shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                    <Button 
+                        size="lg" 
+                        variant="secondary" 
+                        onClick={() => navigate("/register")}
+                        className="w-full sm:w-auto h-12 px-8 text-base shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
+                    >
                         Get Started Now <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
-                    <Button size="lg" className="w-full sm:w-auto h-12 px-8 text-base border-primary-foreground/20 bg-primary-foreground/10 hover:bg-primary-foreground/20 backdrop-blur">
-                        Contact Sales
+                    <Button 
+                        size="lg" 
+                        onClick={() => navigate("/login")}
+                        className="w-full sm:w-auto h-12 px-8 text-base border border-primary-foreground/20 bg-primary-foreground/10 hover:bg-primary-foreground/20 backdrop-blur"
+                    >
+                        Sign In
                     </Button>
                 </div>
             </div>

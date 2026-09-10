@@ -1,9 +1,12 @@
 
 import { ArrowRight, Sparkles } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 import { Button } from "../ui/Button"
 import { Badge } from "../ui/Badge"
 
 export const HeroSection = () => {
+    const navigate = useNavigate()
+
     return (
         <section className="relative overflow-hidden pt-24 pb-16 md:pt-32 md:pb-24 lg:pt-40 lg:pb-32">
             {/* Background gradients */}
@@ -25,11 +28,20 @@ export const HeroSection = () => {
                 </p>
 
                 <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Button size="lg" className="w-full sm:w-auto gap-2 rounded-full px-8">
+                    <Button 
+                        size="lg" 
+                        onClick={() => navigate("/register")}
+                        className="w-full sm:w-auto gap-2 rounded-full px-8 shadow-md hover:shadow-lg transition-all"
+                    >
                         Start Building <ArrowRight className="h-4 w-4" />
                     </Button>
-                    <Button size="lg" variant="outline" className="w-full sm:w-auto rounded-full px-8">
-                        View Documentation
+                    <Button 
+                        size="lg" 
+                        variant="outline" 
+                        onClick={() => navigate("/login")}
+                        className="w-full sm:w-auto rounded-full px-8"
+                    >
+                        Sign In to Workspace
                     </Button>
                 </div>
 
