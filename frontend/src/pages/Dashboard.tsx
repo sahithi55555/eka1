@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import {
     Sparkles,
@@ -250,11 +250,11 @@ export default function Dashboard() {
                     </div>
                     <div className="space-y-1 min-w-0">
                         <h4 className="text-sm font-semibold text-foreground flex items-center gap-1">
-                            Semantic Search
+                            Search Knowledge
                             <ArrowRight className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                         </h4>
                         <p className="text-xs text-muted-foreground leading-relaxed">
-                            Query vector embeddings directly with similarity scores and Top-K control.
+                            Retrieve relevant source passages and text chunks with Top-K depth control.
                         </p>
                     </div>
                 </button>
@@ -268,7 +268,7 @@ export default function Dashboard() {
                     </div>
                     <div className="space-y-1 min-w-0">
                         <h4 className="text-sm font-semibold text-foreground flex items-center gap-1">
-                            AI Workspace
+                            Ask Your Documents
                             <ArrowRight className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                         </h4>
                         <p className="text-xs text-muted-foreground leading-relaxed">

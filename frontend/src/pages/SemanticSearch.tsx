@@ -61,8 +61,8 @@ export const SemanticSearch: React.FC = () => {
     return (
         <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6 animate-in fade-in duration-200">
             <PageHeader
-                title="Semantic Search"
-                description="Query your knowledge repository directly over vector embeddings to retrieve relevant chunks without LLM synthesis."
+                title="Search Knowledge"
+                description="Retrieve relevant source passages and text chunks directly from your organization's indexed knowledge base."
             />
 
             {/* Search Input Card */}

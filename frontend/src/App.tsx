@@ -9,10 +9,12 @@ import Dashboard from "./pages/Dashboard"
 import Chat from "./pages/Chat"
 import Documents from "./pages/Documents"
 import { SemanticSearch } from "./pages/SemanticSearch"
+import AutomateTasks from "./pages/AutomateTasks"
+import ConnectTools from "./pages/ConnectTools"
+import Analytics from "./pages/Analytics"
 import Profile from "./pages/Profile"
 import Settings from "./pages/Settings"
 
-import Analytics from "./pages/Analytics"
 import Admin from "./pages/Admin"
 import AdminUsers from "./pages/AdminUsers"
 import RoleRequests from "./pages/RoleRequests"
@@ -39,6 +41,9 @@ function App() {
           <Route path="/chat" element={<Chat />} />
           <Route path="/documents" element={<Documents />} />
           <Route path="/search" element={<SemanticSearch />} />
+          <Route path="/automate" element={<AutomateTasks />} />
+          <Route path="/integrations" element={<ConnectTools />} />
+          <Route path="/analytics" element={<Analytics />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
@@ -46,7 +51,6 @@ function App() {
         {/* Manager and above access */}
         <Route element={<ProtectedRoute allowedRoles={["manager", "admin"]} />}>
           <Route path="/manager/dashboard" element={<ManagerDashboard />} />
-          <Route path="/analytics" element={<Analytics />} />
         </Route>
 
         {/* Admin only access */}

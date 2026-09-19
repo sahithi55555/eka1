@@ -1,5 +1,6 @@
 import type { Citation } from '../services/chatService';
 import { CitationCard } from './CitationCard';
+import { Bot, User, Layers, Clock } from 'lucide-react';
 
 export interface MessageProps {
   role: 'user' | 'assistant' | 'error';
@@ -13,20 +14,38 @@ export function ChatMessage({ message }: { message: MessageProps }) {
   const isError = message.role === 'error';
 
   return (
-    <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} mb-6`}>
-      <div className={`max-w-[85%] rounded-lg p-5 ${isUser
-          ? 'bg-blue-600 text-white rounded-br-none shadow-sm'
+    <div className={`flex gap-3 mb-6 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+      {/* Avatar Icon */}
+      <div className={`h-8 w-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 shadow-sm text-xs font-bold ${
+        isUser 
+          ? 'bg-primary text-primary-foreground' 
           : isError
-            ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-bl-none text-red-800 dark:text-red-200'
-            : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-bl-none text-gray-800 dark:text-gray-100 shadow-sm'
-        }`}>
+            ? 'bg-destructive/10 text-destructive border border-destructive/20'
+            : 'bg-primary/10 text-primary border border-border'
+      }`}>
+        {isUser ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
+      </div>
 
-        <div className="whitespace-pre-wrap leading-relaxed">{message.content}</div>
+      {/* Message Bubble Container */}
+      <div className={`max-w-[85%] sm:max-w-[78%] rounded-2xl p-4 md:p-5 transition-colors ${
+        isUser
+          ? 'bg-primary text-primary-foreground rounded-tr-xs shadow-sm'
+          : isError
+            ? 'bg-destructive/10 border border-destructive/30 rounded-tl-xs text-destructive'
+            : 'bg-card border border-border rounded-tl-xs text-foreground shadow-sm'
+      }`}>
+        <div className="text-sm leading-relaxed whitespace-pre-wrap selection:bg-primary/20">
+          {message.content}
+        </div>
 
+        {/* Citations Container */}
         {!isUser && !isError && message.citations && message.citations.length > 0 && (
-          <div className="mt-5 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <h4 className="text-sm font-semibold mb-3 text-gray-500 dark:text-gray-400 uppercase tracking-wider">Sources Referenced</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="mt-4 pt-3.5 border-t border-border/70">
+            <h4 className="text-xs font-semibold mb-2.5 text-muted-foreground flex items-center gap-1.5 uppercase tracking-wider">
+              <Layers className="w-3.5 h-3.5 text-primary" />
+              Grounded Sources ({message.citations.length})
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {message.citations.map((c, i) => (
                 <CitationCard key={i} citation={c} />
               ))}
@@ -34,11 +53,19 @@ export function ChatMessage({ message }: { message: MessageProps }) {
           </div>
         )}
 
+        {/* Execution Latency Telemetry */}
         {!isUser && !isError && message.times && (
-          <div className="mt-3 text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-mono">
-            Ret: {message.times.retrieval.toFixed(0)}ms •
-            LLM: {message.times.llm.toFixed(0)}ms •
-            Total: {message.times.total.toFixed(0)}ms
+          <div className="mt-3 flex items-center gap-2 text-[10px] text-muted-foreground font-mono">
+            <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-muted/70 border border-border/50">
+              <Clock className="w-2.5 h-2.5" />
+              Retrieval: {message.times.retrieval.toFixed(0)}ms
+            </span>
+            <span className="px-1.5 py-0.5 rounded bg-muted/70 border border-border/50">
+              LLM: {message.times.llm.toFixed(0)}ms
+            </span>
+            <span className="font-semibold text-foreground">
+              Total: {message.times.total.toFixed(0)}ms
+            </span>
           </div>
         )}
       </div>

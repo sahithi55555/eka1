@@ -4,7 +4,7 @@ import { authService } from "../../features/auth/services/authService"
 import { NavLink, useNavigate, useLocation } from "react-router-dom"
 import {
     LayoutDashboard,
-    MessageSquare,
+    MessageSquareText,
     FileText,
     Search,
     ShieldCheck,
@@ -16,7 +16,10 @@ import {
     ChevronLeft,
     ChevronRight,
     LogOut,
-    Sparkles
+    Sparkles,
+    Zap,
+    Puzzle,
+    BarChart3
 } from "lucide-react"
 import { cn } from "../../utils/cn"
 
@@ -132,11 +135,11 @@ export const Sidebar = ({
 
             {/* Navigation Sections */}
             <div className="flex-1 overflow-y-auto py-4 px-3 space-y-5">
-                {/* SECTION: HOME */}
+                {/* SECTION: CORE */}
                 <div>
                     {!isCollapsed && (
                         <h4 className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/80">
-                            Home
+                            Workspace
                         </h4>
                     )}
                     <div className="space-y-1">
@@ -158,22 +161,42 @@ export const Sidebar = ({
                             Knowledge Library
                         </SidebarLink>
                         <SidebarLink to="/search" icon={<Search />} isCollapsed={isCollapsed}>
-                            Semantic Search
+                            Search Knowledge
                         </SidebarLink>
                     </div>
                 </div>
 
-                {/* SECTION: WORKSPACE */}
+                {/* SECTION: AI ASSISTANT */}
                 <div>
                     {!isCollapsed && (
                         <h4 className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/80 flex items-center justify-between">
-                            <span>Workspace</span>
+                            <span>Assistant</span>
                             <Sparkles className="h-3 w-3 text-primary" />
                         </h4>
                     )}
                     <div className="space-y-1">
-                        <SidebarLink to="/chat" icon={<MessageSquare />} isCollapsed={isCollapsed}>
-                            Chat
+                        <SidebarLink to="/chat" icon={<MessageSquareText />} isCollapsed={isCollapsed}>
+                            Ask Your Documents
+                        </SidebarLink>
+                    </div>
+                </div>
+
+                {/* SECTION: AUTOMATION & TOOLS */}
+                <div>
+                    {!isCollapsed && (
+                        <h4 className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/80">
+                            Automation & Tools
+                        </h4>
+                    )}
+                    <div className="space-y-1">
+                        <SidebarLink to="/automate" icon={<Zap />} isCollapsed={isCollapsed}>
+                            Automate Tasks
+                        </SidebarLink>
+                        <SidebarLink to="/integrations" icon={<Puzzle />} isCollapsed={isCollapsed}>
+                            Connect Your Tools
+                        </SidebarLink>
+                        <SidebarLink to="/analytics" icon={<BarChart3 />} isCollapsed={isCollapsed}>
+                            Insights & Analytics
                         </SidebarLink>
                     </div>
                 </div>

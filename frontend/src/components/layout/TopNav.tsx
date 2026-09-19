@@ -71,9 +71,15 @@ export const TopNav = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
             case "documents":
                 return "Knowledge Library"
             case "search":
-                return "Semantic Search"
+                return "Search Knowledge"
             case "chat":
-                return "AI Workspace"
+                return "Ask Your Documents"
+            case "automate":
+                return "Automate Tasks"
+            case "integrations":
+                return "Connect Your Tools"
+            case "analytics":
+                return "Insights & Analytics"
             case "admin":
                 return "Administration"
             case "users":

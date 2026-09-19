@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import type { SearchResultItem } from '../services/retrievalService';
-import { FileText, ChevronDown, ChevronUp } from 'lucide-react';
+import { FileText, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
 
 interface RetrievedChunkCardProps {
     result: SearchResultItem;
@@ -17,7 +18,7 @@ export const RetrievedChunkCard: React.FC<RetrievedChunkCardProps> = ({ result }
     const scorePercent = (result.similarity_score * 100).toFixed(1);
 
     return (
-        <div className="bg-card/70 hover:bg-card/90 p-5 rounded-xl border border-border shadow-sm flex flex-col gap-3 transition-colors">
+        <div className="bg-card/70 hover:bg-card/90 p-5 rounded-xl border border-border shadow-sm flex flex-col gap-3 transition-colors group">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="space-y-1">
                     <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
@@ -25,6 +26,13 @@ export const RetrievedChunkCard: React.FC<RetrievedChunkCardProps> = ({ result }
                         <span className="truncate max-w-md">
                             {result.metadata.document_name || result.metadata.filename || "Document"}
                         </span>
+                        <Link
+                            to="/documents"
+                            className="text-muted-foreground hover:text-primary transition-colors p-1 rounded opacity-0 group-hover:opacity-100"
+                            title="Inspect in Knowledge Library"
+                        >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                        </Link>
                     </h3>
                     <div className="text-xs text-muted-foreground flex flex-wrap items-center gap-2">
                         <span className="font-mono text-[11px] font-semibold px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
@@ -38,8 +46,8 @@ export const RetrievedChunkCard: React.FC<RetrievedChunkCardProps> = ({ result }
                 </div>
 
                 <div className="shrink-0 flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                        <span>{scorePercent}% Similarity</span>
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                        <span>{scorePercent}% Match</span>
                     </span>
                 </div>
             </div>
