@@ -168,6 +168,9 @@ async def search_chunks(request: SearchRequest) -> APIResponse[SearchResponse]:
 
         word_count = mongo_chunk.get("word_count", 0)
         char_count = mongo_chunk.get("character_count", 0)
+        sec_num = mongo_chunk.get("section_number") or item["metadata"].get("section_number") or None
+        sec_title = mongo_chunk.get("section_title") or item["metadata"].get("section_title") or None
+        chunk_strat = mongo_chunk.get("chunking_strategy") or item["metadata"].get("chunking_strategy") or "structure_aware"
 
         result_metadata = SearchResultItemMetadata(
             document_name=doc_name,
@@ -177,6 +180,9 @@ async def search_chunks(request: SearchRequest) -> APIResponse[SearchResponse]:
             upload_date=upload_date,
             word_count=word_count,
             character_count=char_count,
+            section_number=sec_num,
+            section_title=sec_title,
+            chunking_strategy=chunk_strat,
         )
 
         result_item = SearchResultItem(
@@ -187,6 +193,9 @@ async def search_chunks(request: SearchRequest) -> APIResponse[SearchResponse]:
             page_start=item["metadata"].get("page_start", 1),
             page_end=item["metadata"].get("page_end", 1),
             similarity_score=round(item["similarity"], 4),
+            section_number=sec_num,
+            section_title=sec_title,
+            chunking_strategy=chunk_strat,
             metadata=result_metadata,
         )
         final_results.append(result_item)

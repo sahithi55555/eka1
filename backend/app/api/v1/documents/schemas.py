@@ -32,6 +32,7 @@ class DocumentResponse(DocumentBase):
     embedding_count: Optional[int] = 0
     processed_at: Optional[datetime] = None
     indexed_at: Optional[datetime] = None
+    chunking_strategy: Optional[str] = "structure_aware"
 
 
 class ChunkMetadata(BaseModel):
@@ -39,6 +40,9 @@ class ChunkMetadata(BaseModel):
     file_type: str
     page_start: int
     page_end: int
+    section_number: Optional[str] = None
+    section_title: Optional[str] = None
+    chunking_strategy: Optional[str] = "structure_aware"
 
 
 class DocumentChunkResponse(BaseModel):
@@ -48,6 +52,9 @@ class DocumentChunkResponse(BaseModel):
     text: str
     word_count: int
     character_count: int
+    section_number: Optional[str] = None
+    section_title: Optional[str] = None
+    chunking_strategy: Optional[str] = "structure_aware"
     metadata: ChunkMetadata
 
 

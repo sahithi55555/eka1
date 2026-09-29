@@ -19,7 +19,10 @@ class VectorRepository(ABC):
 
 class ChromaDBRepository(VectorRepository):
     def __init__(self):
-        self.chroma_client = chromadb.PersistentClient(path="./chroma_db")
+        self.chroma_client = chromadb.PersistentClient(
+            path="./chroma_db",
+            settings=chromadb.config.Settings(anonymized_telemetry=False),
+        )
 
     def _get_collection(self):
         return self.chroma_client.get_or_create_collection(
@@ -67,15 +70,9 @@ class ChromaDBRepository(VectorRepository):
         distances = results["distances"][0]
 
         for i in range(len(docs)):
-            # convert string to float for certainty, and parse metadata
-            # chroma cosine distance: similarity = 1 - distance (roughly)
-            # Some versions of chroma return distance, others similarity. We'll map distance to similarity
-            # Distance 0 is identical, so similarity = 1.0 - distance
             similarity = 1.0 - float(distances[i])
-
             meta = metas[i]
 
-            # Extract basic identifiers
             doc_id = meta.get("document_id", "")
             chunk_idx = meta.get("chunk_index", 0)
             chunk_id = f"{doc_id}_{chunk_idx}"
@@ -97,4 +94,3 @@ class ChromaDBRepository(VectorRepository):
             collection.delete(where={"document_id": document_id})
         except Exception as e:
             print(f"ChromaDB delete error: {e}")
-

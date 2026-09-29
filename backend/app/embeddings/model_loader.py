@@ -10,14 +10,11 @@ class ModelLoader:
     @classmethod
     def get_model(cls) -> SentenceTransformer:
         if cls._instance is None:
-            raise RuntimeError(
-                "Model has not been initialized. Call initialize() during startup."
-            )
+            cls.initialize()
         return cls._instance
 
     @classmethod
     def initialize(cls):
         if cls._instance is None:
-            # We enforce downloading and loading the model on startup
             os.environ["TOKENIZERS_PARALLELISM"] = "false"
             cls._instance = SentenceTransformer(EMBEDDING_MODEL_NAME)

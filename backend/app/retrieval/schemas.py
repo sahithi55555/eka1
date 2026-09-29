@@ -31,6 +31,9 @@ class SearchResultItemMetadata(BaseModel):
     upload_date: str
     word_count: int
     character_count: int
+    section_number: Optional[str] = None
+    section_title: Optional[str] = None
+    chunking_strategy: Optional[str] = None
 
 
 class SearchResultItem(BaseModel):
@@ -41,6 +44,9 @@ class SearchResultItem(BaseModel):
     page_start: int
     page_end: int
     similarity_score: float
+    section_number: Optional[str] = None
+    section_title: Optional[str] = None
+    chunking_strategy: Optional[str] = None
     metadata: SearchResultItemMetadata
 
 

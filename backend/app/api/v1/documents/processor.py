@@ -9,12 +9,23 @@ from app.api.v1.documents.constants import (
 from app.db.mongodb import get_database
 
 
-async def process_document_pipeline(document_id: str):
+async def process_document_pipeline(document_id: str, force: bool = False):
     db = get_database()
     try:
         doc = await db.documents.find_one({"id": document_id})
         if not doc:
             return
+
+        if force:
+            # Clean up old chunks and vectors before re-processing
+            await db.document_chunks.delete_many({"document_id": document_id})
+            try:
+                from app.retrieval.repository import ChromaDBRepository
+
+                repo = ChromaDBRepository()
+                repo.delete_by_document(document_id)
+            except Exception as e:
+                print(f"ChromaDB cleanup error on reindex: {e}")
 
         has_chunks = (
             await db.document_chunks.count_documents({"document_id": document_id}) > 0
@@ -68,11 +79,23 @@ async def process_document_pipeline(document_id: str):
                             "text": chunk["text"],
                             "word_count": chunk["word_count"],
                             "character_count": chunk["character_count"],
+                            "section_number": chunk.get("section_number"),
+                            "section_title": chunk.get("section_title"),
+                            "chunking_strategy": chunk.get(
+                                "chunking_strategy", "structure_aware"
+                            ),
                             "metadata": {
-                                "document_name": doc.get("original_filename", ""),
+                                "document_name": doc.get(
+                                    "original_filename", ""
+                                ),
                                 "file_type": doc.get("file_type", ""),
                                 "page_start": chunk["page_start"],
                                 "page_end": chunk["page_end"],
+                                "section_number": chunk.get("section_number"),
+                                "section_title": chunk.get("section_title"),
+                                "chunking_strategy": chunk.get(
+                                    "chunking_strategy", "structure_aware"
+                                ),
                             },
                             "created_at": datetime.utcnow(),
                         }
@@ -81,7 +104,9 @@ async def process_document_pipeline(document_id: str):
 
             # Immediately update metadata BEFORE embedding
             total_words = sum(c["word_count"] for c in chunks) if chunks else 0
-            total_chars = sum(c["character_count"] for c in chunks) if chunks else 0
+            total_chars = (
+                sum(c["character_count"] for c in chunks) if chunks else 0
+            )
 
             await db.documents.update_one(
                 {"id": document_id},
@@ -92,6 +117,7 @@ async def process_document_pipeline(document_id: str):
                         "chunk_count": len(chunks),
                         "word_count": total_words,
                         "character_count": total_chars,
+                        "chunking_strategy": "structure_aware",
                         "processed_at": datetime.utcnow(),
                     }
                 },
@@ -101,7 +127,7 @@ async def process_document_pipeline(document_id: str):
         doc = await db.documents.find_one({"id": document_id})
         status = doc.get("status")
 
-        if status not in [ProcessingStatus.COMPLETED]:
+        if force or status not in [ProcessingStatus.COMPLETED]:
             from app.embeddings import constants as emb_const
             from app.embeddings import embedder
 
@@ -144,6 +170,7 @@ async def process_document_pipeline(document_id: str):
                             "embedding_model": emb_const.EMBEDDING_MODEL_NAME,
                             "embedding_dimension": emb_const.EMBEDDING_DIMENSION,
                             "embedding_count": len(embeddings),
+                            "chunking_strategy": "structure_aware",
                             "indexed_at": datetime.utcnow(),
                         }
                     },
@@ -155,6 +182,7 @@ async def process_document_pipeline(document_id: str):
                         "$set": {
                             "status": ProcessingStatus.COMPLETED,
                             "current_stage": "Processing Completed",
+                            "chunking_strategy": "structure_aware",
                         }
                     },
                 )
@@ -163,5 +191,10 @@ async def process_document_pipeline(document_id: str):
         print(f"Error processing document: {e}")
         await db.documents.update_one(
             {"id": document_id},
-            {"$set": {"status": ProcessingStatus.FAILED, "error_message": str(e)}},
+            {
+                "$set": {
+                    "status": ProcessingStatus.FAILED,
+                    "error_message": str(e),
+                }
+            },
         )
