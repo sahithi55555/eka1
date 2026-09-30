@@ -78,7 +78,9 @@ def chunk_text(
     Deterministic structure-aware chunking:
     - Identifies headings, sections, paragraphs, and lists.
     - Keeps related section and paragraph content together.
-    - Only splits when a section exceeds chunk_size, splitting cleanly at paragraph and sentence boundaries.
+    - Prevents non-substantive standalone headers/titles from forming isolated vector chunks.
+    - Merges leading/isolated title headers with subsequent content blocks.
+    - Only splits when a section exceeds chunk_size, splitting at paragraph and sentence boundaries.
     - Preserves accurate page_start and page_end derived from parser page data.
     - Sets metadata: chunk_index, text, word_count, character_count, page_start, page_end,
       section_number, section_title, and chunking_strategy='structure_aware'.
@@ -86,7 +88,7 @@ def chunk_text(
     if not pages_data:
         return []
 
-    # Step 1: Extract stream of structural units (headings and paragraphs) with page information
+    # Step 1: Extract stream of structural units (headings and paragraphs) with page info
     raw_units = []
     for page in pages_data:
         page_num = page.get("page_number", 1)
@@ -167,11 +169,52 @@ def chunk_text(
     if current_sec["items"] or current_sec["heading_text"]:
         sections.append(current_sec)
 
+    # Step 2b: Merge or attach non-substantive header/title blocks to avoid standalone isolated title chunks
+    merged_sections = []
+    pending_headers = []
+
+    for sec in sections:
+        items = sec["items"]
+        if not items:
+            continue
+
+        sec_text = "\n\n".join([item[0] for item in items])
+        word_count = len(sec_text.split())
+        has_body = len(items) > 1 or (len(items) == 1 and sec["heading_text"] is None)
+        is_substantive = (
+            sec["section_num"] is not None
+            or (has_body and word_count >= 15)
+            or word_count >= 25
+        )
+
+        if not is_substantive:
+            # Accumulate non-substantive title/header items to attach to following content
+            pending_headers.extend(items)
+        else:
+            if pending_headers:
+                combined_items = pending_headers + items
+                combined_text = "\n\n".join([it[0] for it in combined_items])
+                if len(combined_text) <= chunk_size:
+                    sec["items"] = combined_items
+                pending_headers = []
+            merged_sections.append(sec)
+
+    # If any pending headers remain and no substantive sections were created, retain them as fallback
+    if not merged_sections and pending_headers:
+        merged_sections.append(
+            {
+                "section_num": None,
+                "section_title": None,
+                "heading_text": None,
+                "items": pending_headers,
+            }
+        )
+
     # Step 3: Emit Chunks from Sections respecting chunk_size
     chunks = []
     chunk_idx = 0
 
-    for sec in sections:
+    for sec in merged_sections:
         sec_num = sec["section_num"]
         sec_title = sec["section_title"]
         items = sec["items"]
@@ -183,7 +226,6 @@ def chunk_text(
         sec_page_end = items[-1][1]
 
         if len(sec_full_text) <= chunk_size:
-            # Entire section fits within chunk_size
             words = sec_full_text.split()
             chunks.append(
                 {
@@ -200,7 +242,6 @@ def chunk_text(
             )
             chunk_idx += 1
         else:
-            # Section exceeds chunk_size: split at paragraph and sentence boundaries
             curr_chunk_items = []
             curr_chunk_len = 0
 
@@ -235,7 +276,6 @@ def chunk_text(
                         curr_chunk_items.append((item_text, item_page))
                         curr_chunk_len = len(item_text)
                     else:
-                        # Paragraph itself is too large -> split by sentences
                         sentences = _split_into_sentences(item_text)
                         sent_items = []
                         sent_len = 0
@@ -269,7 +309,6 @@ def chunk_text(
                                     sent_items.append(s)
                                     sent_len = len(s)
                                 else:
-                                    # Fallback for single sentence exceeding chunk_size
                                     words = s.split()
                                     w_chunk = []
                                     w_len = 0
